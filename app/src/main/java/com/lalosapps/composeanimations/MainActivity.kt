@@ -1,13 +1,12 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.lalosapps.composeanimations
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColor
+import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,7 +43,21 @@ class MainActivity : ComponentActivity() {
 //                    )
 //                    MyAnimationAsState(isRound = isRound)
 //                    MyUpdateTransition(isRound = isRound)
-                    MyInfiniteAnimation()
+//                    MyInfiniteAnimation()
+
+                    MyAnimatedContent(
+                        isVisible = isVisible,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    MyCrossfade(
+                        isVisible = isVisible,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+                    MyAnimateContentSize(isVisible = isVisible)
                 }
             }
         }
@@ -127,4 +140,75 @@ fun MyInfiniteAnimation() {
             .size(200.dp)
             .background(color)
     )
+}
+
+@Composable
+fun MyAnimatedContent(
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
+) {
+    AnimatedContent(
+        targetState = isVisible,
+        modifier = modifier,
+        content = { visible ->
+            if (visible) {
+                Box(modifier = Modifier.background(Color.Green))
+            } else {
+                Box(modifier = Modifier.background(Color.Red))
+            }
+        },
+        transitionSpec = {
+            slideInHorizontally(
+                initialOffsetX = { -it }
+            ) with slideOutHorizontally(
+                targetOffsetX = {
+                    it
+                }
+            )
+        }
+    )
+}
+
+@Composable
+fun MyCrossfade(
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Crossfade(
+        targetState = isVisible,
+        modifier = modifier
+    ) { visible ->
+        if (visible) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Green)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Red)
+            )
+        }
+    }
+}
+
+@Composable
+fun MyAnimateContentSize(
+    isVisible: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(Color.Blue)
+            .animateContentSize()
+    ) {
+        Text(text = "Hello World!")
+        if (isVisible) {
+            Text(text = "Hello World!")
+            Text(text = "Hello World!")
+            Text(text = "Hello World!")
+        }
+    }
 }
