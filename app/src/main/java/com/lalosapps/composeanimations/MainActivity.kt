@@ -43,7 +43,8 @@ class MainActivity : ComponentActivity() {
 //                            .weight(1f)
 //                    )
 //                    MyAnimationAsState(isRound = isRound)
-                    MyUpdateTransition(isRound = isRound)
+//                    MyUpdateTransition(isRound = isRound)
+                    MyInfiniteAnimation()
                 }
             }
         }
@@ -106,6 +107,24 @@ fun MyUpdateTransition(
         modifier = Modifier
             .size(200.dp)
             .clip(RoundedCornerShape(borderRadius))
+            .background(color)
+    )
+}
+
+@Composable
+fun MyInfiniteAnimation() {
+    val transition = rememberInfiniteTransition()
+    val color by transition.animateColor(
+        initialValue = Color.Red,
+        targetValue = Color.Green,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+    Box(
+        modifier = Modifier
+            .size(200.dp)
             .background(color)
     )
 }
