@@ -4,18 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.lalosapps.composeanimations.ui.theme.ComposeAnimationsTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,17 +28,20 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     var isVisible by remember { mutableStateOf(false) }
+                    var isRound by remember { mutableStateOf(false) }
                     Button(onClick = {
                         isVisible = !isVisible
+                        isRound = !isRound
                     }) {
                         Text(text = "Toggle")
                     }
-                    MyAnimatedVisibility(
-                        isVisible = isVisible,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                    )
+//                    MyAnimatedVisibility(
+//                        isVisible = isVisible,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .weight(1f)
+//                    )
+                    MyAnimationAsState(isRound = isRound)
                 }
             }
         }
@@ -56,4 +60,23 @@ fun MyAnimatedVisibility(
     ) {
         Box(modifier = Modifier.background(Color.Red))
     }
+}
+
+@Composable
+fun MyAnimationAsState(
+    isRound: Boolean
+) {
+    // animationSpec can be tween or spring (default built-in animations) (there is also keyframes {})
+    // For spring we need to set the target value between 0..100 according to how bouncy it is.
+    // Setting it too high or too low might crash the app.
+    val borderRadius by animateIntAsState(
+        targetValue = if (isRound) 100 else 0,
+        animationSpec = tween(durationMillis = 2000)
+    )
+    Box(
+        modifier = Modifier
+            .size(200.dp)
+            .clip(RoundedCornerShape(borderRadius))
+            .background(Color.Red)
+    )
 }
