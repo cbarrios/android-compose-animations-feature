@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
@@ -41,7 +42,8 @@ class MainActivity : ComponentActivity() {
 //                            .fillMaxWidth()
 //                            .weight(1f)
 //                    )
-                    MyAnimationAsState(isRound = isRound)
+//                    MyAnimationAsState(isRound = isRound)
+                    MyUpdateTransition(isRound = isRound)
                 }
             }
         }
@@ -78,5 +80,32 @@ fun MyAnimationAsState(
             .size(200.dp)
             .clip(RoundedCornerShape(borderRadius))
             .background(Color.Red)
+    )
+}
+
+@Composable
+fun MyUpdateTransition(
+    isRound: Boolean
+) {
+    val transition = updateTransition(targetState = isRound, label = null)
+    val borderRadius by transition.animateInt(
+        transitionSpec = { tween((2000)) },
+        label = "borderRadius",
+        targetValueByState = { round ->
+            if (round) 100 else 0
+        }
+    )
+    val color by transition.animateColor(
+        transitionSpec = { tween((1000)) },
+        label = "color",
+        targetValueByState = { round ->
+            if (round) Color.Green else Color.Red
+        }
+    )
+    Box(
+        modifier = Modifier
+            .size(200.dp)
+            .clip(RoundedCornerShape(borderRadius))
+            .background(color)
     )
 }
